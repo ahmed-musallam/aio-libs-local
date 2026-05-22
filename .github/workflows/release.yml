@@ -19,6 +19,11 @@ jobs:
     name: semantic-release
     runs-on: ubuntu-latest
     steps:
+      - name: Use LF line endings on checkout
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - name: Checkout
         uses: actions/checkout@v4
         with:

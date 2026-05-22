@@ -12,6 +12,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      # Windows runners default core.autocrlf=true, which breaks oxfmt --check (expects LF).
+      - name: Use LF line endings on checkout
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
