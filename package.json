@@ -1,6 +1,6 @@
 {
   "name": "@musallam/aio-libs-local",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Local/in-memory stand-ins for @adobe/aio-lib-files and @adobe/aio-lib-state",
   "keywords": [
     "adobe-io",
