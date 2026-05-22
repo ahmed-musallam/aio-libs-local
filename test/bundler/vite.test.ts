@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { execFileSync } from "node:child_process";
+import { build } from "vite";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,11 +10,9 @@ const outFile = path.join(fixtureDir, "dist-vite", "bundle.js");
 
 describe("bundler smoke: vite", () => {
   it("bundle excludes azure SDK and includes stub marker", async () => {
-    const npx = process.platform === "win32" ? "npx.cmd" : "npx";
-    execFileSync(npx, ["vite", "build"], {
-      cwd: fixtureDir,
-      stdio: "pipe",
-      env: { ...process.env, NODE_OPTIONS: "--experimental-vm-modules" },
+    await build({
+      configFile: path.join(fixtureDir, "vite.config.mjs"),
+      root: fixtureDir,
     });
 
     const bundle = await fs.readFile(outFile, "utf8");
