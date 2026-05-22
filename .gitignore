@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.aio-files/
+*.log
+.DS_Store
+test/bundler/fixture/dist*/
+test/bundler/fixture/dist-*/
+.cursor/

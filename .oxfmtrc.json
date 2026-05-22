@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    ".cursor/**",
+    "dist/**",
+    "node_modules/**",
+    "coverage/**",
+    "test/bundler/fixture/dist*/**",
+    "pnpm-lock.yaml"
+  ]
+}
