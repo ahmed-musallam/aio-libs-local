@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: semantic-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use LF line endings on checkout
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      # Do not set registry-url — it breaks semantic-release npm OIDC auth
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm run fmt:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Release to GitHub and npm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec semantic-release

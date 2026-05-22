@@ -1,0 +1,5 @@
+# Keep LF in the working tree on all platforms (required for oxfmt --check on Windows CI).
+* text=auto eol=lf
+
+# Bundler fixture outputs may contain minified single-line JS; treat as text with LF.
+test/bundler/fixture/dist*/** text eol=lf
