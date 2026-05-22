@@ -48,8 +48,7 @@
     }
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "scripts": {
     "build": "tsc",
@@ -61,7 +60,7 @@
     "lint:fix": "oxlint --fix .",
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
-    "prepare": "husky",
+    "prepare": "node -e \"if(process.env.CI||process.env.HUSKY==='0')process.exit(0)\" && husky",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
@@ -72,7 +71,6 @@
     "@commitlint/config-conventional": "21.0.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/commit-analyzer": "13.0.1",
-    "@semantic-release/exec": "7.1.0",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "12.0.8",
     "@semantic-release/npm": "13.1.5",

@@ -2,13 +2,9 @@ name: Release
 
 on:
   push:
-    branches: [main, master]
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
+    branches:
+      - main
+      - master
 
 concurrency:
   group: release-${{ github.ref }}
@@ -16,29 +12,32 @@ concurrency:
 
 jobs:
   release:
-    name: semantic-release
+    name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
-      - name: Use LF line endings on checkout
-        if: runner.os == 'Windows'
-        shell: bash
-        run: git config --global core.autocrlf false
-
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
-      # Do not set registry-url — it breaks semantic-release npm OIDC auth
+      # Do not set registry-url — breaks semantic-release npm OIDC / trusted publishing
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "pnpm"
+          # semantic-release v25: ^22.14.0 || >= 24.10.0 (firefly-sdk uses 24)
+          node-version: "24"
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
 
       - name: Format check
         run: pnpm run fmt:check
@@ -47,9 +46,11 @@ jobs:
         run: pnpm run lint
 
       - name: Test
-        run: pnpm test
+        run: pnpm exec vitest run
 
-      - name: Release to GitHub and npm
+      - name: Release
+        run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm exec semantic-release
+          HUSKY: "0"
+          CI: "true"

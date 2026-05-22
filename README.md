@@ -162,27 +162,26 @@ npm equivalents: `npm test`, `npm run test:unit`, etc.
 
 ## Releasing
 
-Releases are automated with [semantic-release](https://semantic-release.gitbook.io/) on push to `main` / `master` (see [.github/workflows/release.yml](.github/workflows/release.yml)).
+Releases are automated with [semantic-release](https://semantic-release.gitbook.io/) on every push to `main` / `master` (same pattern as [adobe-firefly-sdk](https://github.com/ahmed-musallam/adobe-firefly-client); see [.github/workflows/release.yml](.github/workflows/release.yml) and [.releaserc.json](.releaserc.json)).
 
-1. Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.) — enforced by commitlint on every commit.
-2. Merge to `main`; the Release workflow runs tests, then:
-   - Bumps `package.json` version
-   - Updates `CHANGELOG.md`
+1. Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.) — enforced by commitlint.
+2. Merge to `main`; the Release workflow runs build, format check, lint, tests, then:
+   - Bumps `package.json` and commits `CHANGELOG.md`
    - Creates a [GitHub Release](https://github.com/ahmed-musallam/aio-libs-local/releases)
-   - Publishes `@musallam/aio-libs-local` to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements)
+   - Publishes `@musallam/aio-libs-local` to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) via trusted publishing (OIDC)
 
-### npm trusted publishing (one-time setup)
+### npm trusted publishing (required — no `NPM_TOKEN`)
 
-No `NPM_TOKEN` secret is required. Configure [trusted publishing](https://docs.npmjs.com/trusted-publishers) on npm for the package (or the `@musallam` scope):
+Same setup as other `@musallam` packages: configure [trusted publishing](https://docs.npmjs.com/trusted-publishers) on the **`@musallam`** npm org (or user). Do **not** add `NPM_TOKEN` to GitHub — it overrides OIDC.
 
-| Field             | Value                                               |
-| ----------------- | --------------------------------------------------- |
-| Provider          | GitHub Actions                                      |
-| Repository        | `ahmed-musallam/aio-libs-local`                     |
-| Workflow filename | `release.yml`                                       |
-| Environment       | _(leave empty unless you use a GitHub Environment)_ |
+| Field             | Value                           |
+| ----------------- | ------------------------------- |
+| Provider          | GitHub Actions                  |
+| Repository        | `ahmed-musallam/aio-libs-local` |
+| Workflow filename | `release.yml`                   |
+| Environment       | _(empty)_                       |
 
-Ensure the `@musallam` scope exists on npm and allows public packages (`publishConfig.access` is `public`). The workflow sets `id-token: write` for OIDC; do **not** set `registry-url` on `setup-node` in the release workflow.
+If this repo is new, an org-level publisher (already used for `@musallam/ffs-*` packages) is enough. Otherwise add the table above for this repository. Do **not** set `registry-url` on `setup-node` in the release workflow.
 
 ## License
 
